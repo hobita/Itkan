@@ -1,8 +1,14 @@
+import { prisma } from '@/lib/prisma';
 import { Search, ArrowRight, ShieldCheck, Truck, Clock } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
+import HomeSearchForm from '@/components/HomeSearchForm';
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+    const brands = await prisma.brand.findMany({ take: 10, orderBy: { name: 'asc' } });
+    const categories = await prisma.category.findMany({ take: 6, orderBy: { name: 'asc' } });
+
     return (
         <main className="main-content">
             {/* Hero Section */}
@@ -19,28 +25,10 @@ export default function Home() {
 
                     <div className="hero-search">
                         <div className="search-tabs">
-                            <button className="tab active">Find by Vehicle</button>
-                            <button className="tab">Find by Part #</button>
+                            <button className="tab active">Find by Keyword</button>
+                            <button className="tab disabled" title="Coming Soon">Find by Vehicle</button>
                         </div>
-                        <div className="search-form">
-                            <select className="search-select">
-                                <option>Make</option>
-                                <option>Toyota</option>
-                                <option>Nissan</option>
-                                <option>Mazda</option>
-                                <option>Hyundai</option>
-                                <option>Kia</option>
-                            </select>
-                            <select className="search-select">
-                                <option>Model</option>
-                            </select>
-                            <select className="search-select">
-                                <option>Year</option>
-                            </select>
-                            <Link href="/products" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                                Find Parts <Search size={18} />
-                            </Link>
-                        </div>
+                        <HomeSearchForm />
                     </div>
                 </div>
             </section>
@@ -50,12 +38,12 @@ export default function Home() {
                 <div className="brands-container">
                     <p className="brands-text">SUPPORTING TOP MANUFACTURERS</p>
                     <div className="brands-scroll">
-                        {['MAZDA', 'TOYOTA', 'NISSAN', 'HYUNDAI', 'KIA', 'FORD', 'SUZUKI', 'MITSUBISHI', 'ISUZU', 'MG'].map((brand) => (
-                            <span key={brand} className="brand-name">{brand}</span>
+                        {brands.map((brand) => (
+                            <Link href="/products" key={brand.id} className="brand-name">{brand.name}</Link>
                         ))}
                         {/* Duplicated for infinite scroll effect */}
-                        {['MAZDA', 'TOYOTA', 'NISSAN', 'HYUNDAI', 'KIA', 'FORD', 'SUZUKI', 'MITSUBISHI', 'ISUZU', 'MG'].map((brand, i) => (
-                            <span key={`${brand}-dup`} className="brand-name">{brand}</span>
+                        {brands.map((brand) => (
+                            <Link href="/products" key={`${brand.id}-dup`} className="brand-name">{brand.name}</Link>
                         ))}
                     </div>
                 </div>
@@ -87,11 +75,13 @@ export default function Home() {
                     <Link href="/categories" className="view-all">View All <ArrowRight size={16} /></Link>
                 </div>
                 <div className="categories-grid">
-                    {['Engine Components', 'Brake Systems', 'Suspension & Steering', 'Filters & Fluids', 'Electrical & Lighting', 'Body Parts'].map((cat) => (
-                        <Link key={cat} href="/products" className="category-card" style={{ textDecoration: 'none', color: 'inherit' }}>
-                            <div className="category-placeholder"></div>
+                    {categories.map((cat) => (
+                        <Link key={cat.id} href="/products" className="category-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <div className="category-placeholder">
+                                <span className="text-4xl text-white opacity-20">{cat.name.charAt(0)}</span>
+                            </div>
                             <div className="category-info">
-                                <h3>{cat}</h3>
+                                <h3>{cat.name}</h3>
                                 <span className="category-link">Shop Now <ArrowRight size={14} /></span>
                             </div>
                         </Link>

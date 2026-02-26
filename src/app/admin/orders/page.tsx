@@ -1,14 +1,7 @@
 import { prisma } from '@/lib/prisma';
-import { Clock, CheckCircle, Truck, PackageCheck } from 'lucide-react';
+import OrderStatusSelect from '@/components/OrderStatusSelect';
 
 export const dynamic = 'force-dynamic';
-
-const statusIcons: Record<string, React.ReactNode> = {
-    PENDING: <Clock size={16} className="status-icon pending" />,
-    PROCESSING: <CheckCircle size={16} className="status-icon processing" />,
-    SHIPPED: <Truck size={16} className="status-icon shipped" />,
-    DELIVERED: <PackageCheck size={16} className="status-icon delivered" />,
-};
 
 export default async function AdminOrdersPage() {
     const orders = await prisma.order.findMany({
@@ -43,9 +36,7 @@ export default async function AdminOrdersPage() {
                                 <td>{order.customerEmail}</td>
                                 <td>${order.total.toFixed(2)}</td>
                                 <td>
-                                    <span className={`status-badge ${order.status.toLowerCase()}`}>
-                                        {statusIcons[order.status]} {order.status}
-                                    </span>
+                                    <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
                                 </td>
                                 <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                             </tr>

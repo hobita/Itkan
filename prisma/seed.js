@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
@@ -149,6 +150,30 @@ async function main() {
             console.log(`  ✓ Product: ${p.name}`);
         } catch (e) {
             console.log(`  ⏭ Product already exists: ${p.name}`);
+        }
+    }
+
+    // Seed Admin accounts
+    console.log('Seeding Admin accounts...');
+    const adminsData = [
+        { username: 'admin', password: 'admin1234', role: 'admin' },
+        { username: 'rayen', password: 'm6e63v10', role: 'superadmin' },
+    ];
+
+    for (const a of adminsData) {
+        try {
+            const existing = await prisma.admin.findUnique({ where: { username: a.username } });
+            if (existing) {
+                console.log(`  ⏭ Admin already exists: ${a.username}`);
+                continue;
+            }
+            const hashed = await bcrypt.hash(a.password, 12);
+            await prisma.admin.create({
+                data: { username: a.username, password: hashed, role: a.role },
+            });
+            console.log(`  ✓ Admin: ${a.username}`);
+        } catch (e) {
+            console.log(`  ⏭ Admin already exists: ${a.username}`);
         }
     }
 

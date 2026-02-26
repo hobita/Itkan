@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil } from 'lucide-react';
+import DeleteProductButton from '@/components/DeleteProductButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,9 +49,7 @@ export default async function AdminProductsPage() {
                                 <Link href={`/admin/products/${product.id}`} className="action-btn edit" title="Edit">
                                     <Pencil size={14} />
                                 </Link>
-                                <button className="action-btn delete" title="Delete">
-                                    <Trash2 size={14} />
-                                </button>
+                                <DeleteProductButton productId={product.id} />
                             </td>
                         </tr>
                     ))}

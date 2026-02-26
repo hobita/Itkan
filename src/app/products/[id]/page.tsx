@@ -1,18 +1,17 @@
-import { use } from 'react';
 import { prisma } from '@/lib/prisma';
-import { Star, ShieldCheck, Truck, RotateCcw, ShoppingCart } from 'lucide-react';
+import { notFound } from 'next/navigation';
+import { ShoppingCart, ShieldCheck, Truck, RotateCcw, Star } from 'lucide-react';
 import Link from 'next/link';
+import AddToCartButton from '@/components/AddToCartButton';
 
 export const dynamic = 'force-dynamic';
 
-export default function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-    const resolvedParams = use(params);
-    const product = use(
-        prisma.product.findUnique({
-            where: { id: resolvedParams.id },
-            include: { brand: true, category: true },
-        })
-    );
+export default async function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const product = await prisma.product.findUnique({
+        where: { id },
+        include: { brand: true, category: true },
+    });
 
     if (!product) {
         return (
@@ -42,12 +41,6 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                     <div className="main-image">
                         <span className="part-placeholder-icon">🛠️</span>
                     </div>
-                    <div className="image-thumbnails">
-                        <div className="thumbnail active"></div>
-                        <div className="thumbnail"></div>
-                        <div className="thumbnail"></div>
-                        <div className="thumbnail"></div>
-                    </div>
                 </div>
 
                 {/* Right Column - Info & Cart */}
@@ -57,11 +50,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                     <div className="product-meta">
                         <div className="product-rating">
                             <div className="stars">
-                                <Star size={16} fill="currentColor" />
-                                <Star size={16} fill="currentColor" />
-                                <Star size={16} fill="currentColor" />
-                                <Star size={16} fill="currentColor" />
-                                <Star size={16} fill="currentColor" />
+                                {[1, 2, 3, 4, 5].map(i => <Star key={i} size={16} fill="currentColor" />)}
                             </div>
                             <span className="review-count">4.8 (124 reviews)</span>
                         </div>
@@ -70,7 +59,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
 
                     <div className="product-price-section">
                         <span className="product-price-large">${product.price.toFixed(2)}</span>
-                        <span className={`stock-status ${product.stock > 0 ? 'in-stock' : ''}`}>
+                        <span className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
                             {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
                         </span>
                     </div>
@@ -83,15 +72,9 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                         ))}
                     </ul>
 
+                    {/* Add to Cart Widget using Zustand */}
                     <div className="add-to-cart-widget">
-                        <div className="quantity-selector">
-                            <button className="qty-btn">-</button>
-                            <input type="number" defaultValue="1" className="qty-input" />
-                            <button className="qty-btn">+</button>
-                        </div>
-                        <button className="btn-primary flex-1 btn-large">
-                            <ShoppingCart size={20} /> Add to Cart
-                        </button>
+                        <AddToCartButton product={product} />
                     </div>
 
                     <div className="product-trust-badges">

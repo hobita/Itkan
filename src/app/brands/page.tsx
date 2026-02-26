@@ -17,14 +17,18 @@ export default async function BrandsPage() {
                 <p className="page-subtitle">We partner with the world&apos;s most trusted automotive parts manufacturers.</p>
             </div>
 
-            <div className="brands-grid-full">
+            <div className="brands-grid">
                 {brands.map((brand) => (
-                    <Link key={brand.id} href="/products" className="brand-card-full" style={{ textDecoration: 'none', color: 'inherit' }}>
-                        <h2 className="brand-card-name">{brand.name}</h2>
-                        <p className="brand-card-tagline">{brand.tagline}</p>
-                        <div className="brand-card-footer">
-                            <span className="brand-product-count">{brand._count.products} products</span>
-                            <span className="brand-link">Shop <ArrowRight size={14} /></span>
+                    <Link key={brand.id} href="/products" className="brand-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <div className="brand-logo-placeholder">
+                            <span className="brand-text-lg">{brand.name}</span>
+                        </div>
+                        <div className="brand-info">
+                            <p className="brand-tagline">{brand.tagline}</p>
+                            <div className="brand-footer">
+                                <span className="part-count">{brand._count.products} products</span>
+                                <span className="view-link">Shop <ArrowRight size={14} /></span>
+                            </div>
                         </div>
                     </Link>
                 ))}

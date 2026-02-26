@@ -26,15 +26,17 @@ export default async function CategoriesPage() {
                 <p className="page-subtitle">Browse our complete selection of automotive parts organized by vehicle system.</p>
             </div>
 
-            <div className="categories-grid-full">
+            <div className="categories-grid-expanded">
                 {categories.map((cat) => (
-                    <Link key={cat.id} href="/products" className="category-card-full" style={{ textDecoration: 'none', color: 'inherit' }}>
-                        <div className="cat-icon-wrap">
+                    <Link key={cat.id} href="/products" className="category-card-large" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <div className="category-icon-wrapper">
                             {iconMap[cat.icon] || <Settings size={36} />}
                         </div>
-                        <h3>{cat.name}</h3>
-                        <p className="cat-count">{cat._count.products} products</p>
-                        <span className="cat-link">Browse <ArrowRight size={14} /></span>
+                        <div className="category-details">
+                            <h2>{cat.name}</h2>
+                            <p>{cat._count.products} products</p>
+                            <span className="view-link">Browse <ArrowRight size={14} /></span>
+                        </div>
                     </Link>
                 ))}
             </div>
